@@ -18,3 +18,4 @@
 0077834_dtmf_volume_zero.patch
 0082596_endpoint_not_inuse_default.patch
 0083740_queue_default_retry_zero.patch
+0000000_voicemail_avoid_locution.patch
