@@ -3,7 +3,6 @@
 0045696_sorcery_id.patch
 0046109_improve_logging.patch
 0060929_pjsip_t38_initial_invite.patch
-0062162_confbdirge_entering_count.patch
 0062268_unique_hashid.patch
 0062872_pjsip_identify_contact.patch
 0063323_log_tag_from_sip_header.patch
@@ -13,7 +12,6 @@
 0000000_multihomed_media_address_regression.patch
 0000000_asymmetric_rtp_codec_fix.patch
 0000000_direct_media_update_fixup.patch
-0000000_confbridge_cbann_stuck.patch
 0000000_dtmf_asymmetric_stream_fix.patch
 0077834_dtmf_volume_zero.patch
 0082596_endpoint_not_inuse_default.patch
