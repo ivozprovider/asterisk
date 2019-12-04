@@ -1,0 +1,13 @@
+diff --git a/apps/app_voicemail.c b/apps/app_voicemail.c
+index fe5657dc8b..8029afec7d 100644
+--- a/apps/app_voicemail.c
++++ b/apps/app_voicemail.c
+@@ -6678,6 +6678,8 @@ static int leave_voicemail(struct ast_channel *chan, char *ext, struct leave_vm_
+ 			ast_free(tmp);
+ 			return -1;
+ 		}
++		// Do not play intro if user has recorded message
++		ast_set_flag(options, OPT_SILENT);
+ 	}
+ 	if (res == '#') {
+ 		/* On a '#' we skip the instructions */
