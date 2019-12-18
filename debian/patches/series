@@ -17,3 +17,4 @@
 0082596_endpoint_not_inuse_default.patch
 0083740_queue_default_retry_zero.patch
 0000000_voicemail_avoid_locution.patch
+0000000_voicemail_skip_intro.patch
