@@ -18,3 +18,4 @@
 0083740_queue_default_retry_zero.patch
 0000000_voicemail_avoid_locution.patch
 0000000_voicemail_skip_intro.patch
+0000000_disable_queue_member_congestion.patch

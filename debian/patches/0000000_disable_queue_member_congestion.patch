@@ -1,0 +1,60 @@
+diff --git a/apps/app_queue.c b/apps/app_queue.c
+index ac4738fd27..95fbbf8c02 100644
+--- a/apps/app_queue.c
++++ b/apps/app_queue.c
+@@ -1336,6 +1336,7 @@ static const struct autopause {
+ #define DEFAULT_TIMEOUT		15
+ #define RECHECK			1		/*!< Recheck every second to see we we're at the top yet */
+ #define MAX_PERIODIC_ANNOUNCEMENTS 10           /*!< The maximum periodic announcements we can have */
++#define MEMBER_DISABLED_SECONDS 10
+ /*!
+  * \brief The minimum number of seconds between position announcements.
+  * \note The default value of 15 provides backwards compatibility.
+@@ -1512,6 +1513,7 @@ struct member {
+ 	int callcompletedinsl;               /*!< Whether the current call was completed within service level */
+ 	time_t starttime;                    /*!< The time at which the member answered the current caller. */
+ 	time_t lastcall;                     /*!< When last successful call was hungup */
++	time_t lasterror;                    /*!< When last error call was attempted */
+ 	struct call_queue *lastqueue;	     /*!< Last queue we received a call */
+ 	unsigned int dead:1;                 /*!< Used to detect members deleted in realtime */
+ 	unsigned int delme:1;                /*!< Flag to delete entry on reload */
+@@ -2398,6 +2400,12 @@ static int is_member_available(struct call_queue *q, struct member *mem)
+ 	if (mem->lastcall && q->wrapuptime && (time(NULL) - q->wrapuptime < mem->lastcall)) {
+ 		available = 0;
+ 	}
++
++	/* Let last error override device state availability */
++	if (mem->lasterror && (time(NULL) - mem->lasterror < MEMBER_DISABLED_SECONDS)) {
++		available = 0;
++	}
++
+ 	return available;
+ }
+ 
+@@ -4286,6 +4294,17 @@ static int can_ring_entry(struct queue_ent *qe, struct callattempt *call)
+ 			pending_members_remove(call->member);
+ 			return 0;
+ 		}
++
++		/*
++		 * Queue have failed to call recently so avoid calling this member again
++		 * during this queue execution.
++		 */
++		if (time(NULL) - call->member->lasterror < MEMBER_DISABLED_SECONDS) {
++			ast_debug(1, "%s still disabled from previous error call\n",
++				call->interface);
++			pending_members_remove(call->member);
++			return 0;
++		}
+ 	}
+ 
+ 	return 1;
+@@ -5060,6 +5079,8 @@ static struct callattempt *wait_for_answer(struct queue_ent *qe, struct callatte
+ 							endtime = (long) time(NULL);
+ 							endtime -= starttime;
+ 							rna(endtime * 1000, qe, o->chan, on, membername, qe->parent->autopauseunavail);
++							// Store last congestion time
++							time(&o->member->lasterror);
+ 							do_hang(o);
+ 							if (qe->parent->strategy != QUEUE_STRATEGY_RINGALL) {
+ 								if (qe->parent->timeoutrestart) {
