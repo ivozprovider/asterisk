@@ -1,0 +1,37 @@
+Source: ivozprovider-asterisk
+Section: comm
+Priority: optional
+Build-Depends: debhelper, dh-systemd, quilt, libncurses5-dev, libxml2-dev, wget,
+    libjansson-dev, libssl-dev, libsrtp2-dev, uuid-dev, libsqlite3-dev, subversion,
+    libopus-dev, pkg-config, build-essential, git, libmyodbc, libedit-dev,
+    odbcinst, unixodbc-dev, autoconf, libspeex-dev, libspeexdsp-dev, libgsm1-dev,
+    libgsm1-dev, portaudio19-dev, python-dev, libspandsp-dev, libtiff5-dev, ca-certificates,
+    xmlstarlet, libcurl4
+Standards-Version: 3.9.6
+Maintainer: Irontec IvozProvider Team <ivozprovider@irontec.com>
+
+Package: ivozprovider-asterisk
+Architecture: any
+Section: comm
+Priority: optional
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends},
+    ivozprovider-asterisk-config
+Conflicts: asterisk-bristuff, asterisk-classic, asterisk-rsp, asterisk
+Description: IVOZ Provider - Asterisk - Asterisk Binaries (custom patches included)
+ Asterisk is an Open Source PBX and telephony toolkit.  It is, in a
+ sense, middleware between Internet and telephony channels on the bottom,
+ and Internet and telephony applications at the top.
+ .
+ Asterisk can be used with Voice over IP (SIP, H.323, IAX and more) standards,
+ or the Public Switched Telephone Network (PSTN) through supported hardware.
+ .
+Homepage: http://www.irontec.com
+
+Package: ivozprovider-asterisk-dbg
+Architecture: any
+Section: comm
+Priority: optional
+Depends: ivozprovider-asterisk (= ${binary:Version}), ${misc:Depends}
+Description: IVOZ Provider - Asterisk - Asterisk Debugging Symbols
+ .

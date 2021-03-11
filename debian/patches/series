@@ -1,0 +1,12 @@
+001_asterisk_version.patch
+002_fake_ringing_fix.patch
+003_sorcery_id.patch
+005_unique_hashid.patch
+006_pjsip_early_replaces.patch
+007_builtin_feature_macro.patch
+008_direct_media_update_fixup.patch
+009_endpoint_not_inuse_default.patch
+010_queue_default_retry.patch
+011_voicemail_avoid_locution.patch
+012_voicemail_skip_intro.patch
+013_disable_queue_member_congestion.patch

@@ -1,0 +1,55 @@
+diff --git a/channels/chan_pjsip.c b/channels/chan_pjsip.c
+index f4409de4a7..87f36e838f 100644
+--- a/channels/chan_pjsip.c
++++ b/channels/chan_pjsip.c
+@@ -167,6 +167,32 @@ static struct ast_sip_session_supplement chan_pjsip_ack_supplement = {
+ 	.incoming_request = chan_pjsip_incoming_ack,
+ };
+ 
++static int chan_pjsip_get_cidhash(struct ast_channel *chan, pjsip_msg *msg)
++{
++	if (!chan || !msg)
++		return -1;
++
++	// Get Call-Id Header data
++	pjsip_cid_hdr *hdr = pjsip_msg_find_hdr(msg, PJSIP_H_CALL_ID, NULL);
++	if (!hdr || hdr->id.slen >= 1024)
++		return -1;
++
++	// Calculate value md5
++	char callid[1024], hash[33];
++	memset(callid, 0, sizeof(callid));
++	memset(hash, 0, sizeof(hash));
++	strncpy(callid, hdr->id.ptr, hdr->id.slen);
++	ast_md5_hash(hash, callid);
++
++	// Only get first eight characters
++	hash[8] = '\0';
++
++	// Set Channel variable CID_HASH (will be used in pbx messages)
++	pbx_builtin_setvar_helper(chan, "__CID_HASH", hash);
++
++	return 0;
++}
++
+ /*! \brief Function called by RTP engine to get local audio RTP peer */
+ static enum ast_rtp_glue_result chan_pjsip_get_rtp_peer(struct ast_channel *chan, struct ast_rtp_instance **instance)
+ {
+@@ -2362,6 +2388,8 @@ static int call(void *data)
+ 		ast_set_hangupsource(session->channel, ast_channel_name(session->channel), 0);
+ 		ast_queue_hangup(session->channel);
+ 	} else {
++		// Store channel hash (calculated from MD5 of the Call-Id header)
++		chan_pjsip_get_cidhash(session->channel, tdata->msg);
+ 		set_channel_on_rtp_instance(session, ast_channel_uniqueid(session->channel));
+ 		update_initial_connected_line(session);
+ 		ast_sip_session_send_request(session, tdata);
+@@ -3048,6 +3076,8 @@ static int chan_pjsip_incoming_request(struct ast_sip_session *session, struct p
+ 
+ 	/* channel gets created on incoming request, but we wait to call start
+            so other supplements have a chance to run */
++	// Store channel hash (calculated from MD5 of the Call-Id header)
++	chan_pjsip_get_cidhash(session->channel, rdata->msg_info.msg);
+ 	SCOPE_EXIT_RTN_VALUE(0, "%s\n", ast_sip_session_get_name(session));
+ }
+ 

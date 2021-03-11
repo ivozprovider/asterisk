@@ -1,0 +1,14 @@
+diff --git a/res/res_pjsip_session.c b/res/res_pjsip_session.c
+index d6c5fbc..127bb73 100644
+--- a/res/res_pjsip_session.c
++++ b/res/res_pjsip_session.c
+@@ -2586,7 +2586,8 @@ static void handle_incoming_before_media(pjsip_inv_session *inv,
+ 	msg = rdata->msg_info.msg;
+ 	if (msg->type == PJSIP_REQUEST_MSG
+ 		&& msg->line.req.method.id == PJSIP_ACK_METHOD
+-		&& pjmedia_sdp_neg_get_state(inv->neg) != PJMEDIA_SDP_NEG_STATE_DONE) {
++		&& pjmedia_sdp_neg_get_state(inv->neg) != PJMEDIA_SDP_NEG_STATE_DONE
++		&& pjmedia_sdp_neg_get_state(inv->neg) != PJMEDIA_SDP_NEG_STATE_LOCAL_OFFER) {
+ 		pjsip_tx_data *tdata;
+ 
+ 		/*

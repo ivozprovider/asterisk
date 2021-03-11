@@ -1,0 +1,16 @@
+diff --git a/channels/chan_pjsip.c b/channels/chan_pjsip.c
+index e2fd13c..f4a62bd 100644
+--- a/channels/chan_pjsip.c
++++ b/channels/chan_pjsip.c
+@@ -1287,9 +1287,9 @@ static int update_connected_line_information(void *data)
+ 		int response_code = 0;
+ 
+ 		if (ast_channel_state(session->channel) == AST_STATE_RING) {
+-			response_code = !session->endpoint->inband_progress ? 180 : 183;
++			return 0;
+ 		} else if (ast_channel_state(session->channel) == AST_STATE_RINGING) {
+-			response_code = 183;
++			response_code = !session->endpoint->inband_progress ? 180 : 183;
+ 		}
+ 
+ 		if (response_code) {

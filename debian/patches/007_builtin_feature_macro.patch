@@ -1,0 +1,26 @@
+diff --git a/bridges/bridge_builtin_features.c b/bridges/bridge_builtin_features.c
+index d09a7a2..adce1c0 100644
+--- a/bridges/bridge_builtin_features.c
++++ b/bridges/bridge_builtin_features.c
+@@ -402,6 +402,12 @@ static void start_automixmonitor(struct ast_bridge_channel *bridge_channel, stru
+ 	pbx_builtin_setvar_helper(peer_chan, "TOUCH_MIXMONITOR_OUTPUT", touch_filename);
+ }
+ 
++static int feature_automixmacro(struct ast_bridge_channel *bridge_channel, void *hook_pvt)
++{
++    ast_bridge_channel_run_app(bridge_channel, "macro", "demand-record", NULL);
++    return 0;
++}
++
+ static int feature_automixmonitor(struct ast_bridge_channel *bridge_channel, void *hook_pvt)
+ {
+ 	static const char *mixmonitor_spy_type = "MixMonitor";
+@@ -510,7 +516,7 @@ static int load_module(void)
+ {
+ 	ast_bridge_features_register(AST_BRIDGE_BUILTIN_HANGUP, feature_hangup, NULL);
+ 	ast_bridge_features_register(AST_BRIDGE_BUILTIN_AUTOMON, feature_automonitor, NULL);
+-	ast_bridge_features_register(AST_BRIDGE_BUILTIN_AUTOMIXMON, feature_automixmonitor, NULL);
++	ast_bridge_features_register(AST_BRIDGE_BUILTIN_AUTOMIXMON, feature_automixmacro, NULL);
+ 
+ 	/* This module cannot be unloaded until shutdown */
+ 	ast_module_shutdown_ref(ast_module_info->self);

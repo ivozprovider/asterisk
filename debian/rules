@@ -1,0 +1,36 @@
+#!/usr/bin/make -f
+
+override_dh_auto_configure:
+	contrib/scripts/get_mp3_source.sh || true
+	dh_auto_configure -- --libdir=/usr/lib --with-pjproject-bundled
+
+override_dh_auto_build:
+	${MAKE} menuselect.makeopts
+	menuselect/menuselect --enable format_mp3 menuselect.makeopts
+	menuselect/menuselect --enable codec_opus menuselect.makeopts
+	menuselect/menuselect --disable res_srtp menuselect.makeopts
+	menuselect/menuselect --disable CORE-SOUNDS-EN-GSM menuselect.makeopts
+	menuselect/menuselect --disable CORE-SOUNDS-EN-G729 menuselect.makeopts
+	menuselect/menuselect --disable CORE-SOUNDS-ES-G729 menuselect.makeopts
+	menuselect/menuselect --disable CORE-SOUNDS-EN-ALAW menuselect.makeopts
+	menuselect/menuselect --disable CORE-SOUNDS-ES-ALAW menuselect.makeopts
+	dh_auto_build
+
+override_dh_strip:
+	dh_strip --dbg-package=ivozprovider-asterisk-dbg
+
+override_dh_auto_install:
+	dh_auto_install --destdir=debian/ivozprovider-asterisk
+
+override_dh_installdocs:
+	dh_installdocs --link-doc=ivozprovider-asterisk
+
+# Install systemd unit files
+override_dh_systemd_enable:
+	dh_systemd_enable --name=asterisk
+
+override_dh_systemd_start:
+	dh_systemd_start --no-restart-on-upgrade --no-start
+
+%:
+	dh $@ --with quilt --with systemd

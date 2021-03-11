@@ -1,0 +1,13 @@
+diff --git a/apps/app_voicemail.c b/apps/app_voicemail.c
+index fe5657dc8b..27955b9b35 100644
+--- a/apps/app_voicemail.c
++++ b/apps/app_voicemail.c
+@@ -6668,7 +6668,7 @@ static int leave_voicemail(struct ast_channel *chan, char *ext, struct leave_vm_
+ #endif
+ 		} else {
+ 			ast_debug(1, "%s doesn't exist, doing what we can\n", prefile);
+-			res = invent_message(chan, vmu->context, ext, ast_test_flag(options, OPT_BUSY_GREETING), ecodes);
++			res = 0;
+ 		}
+ 		DISPOSE(prefile, -1);
+ 		if (res < 0) {

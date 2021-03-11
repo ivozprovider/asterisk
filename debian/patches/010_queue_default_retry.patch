@@ -1,0 +1,13 @@
+diff --git a/apps/app_queue.c b/apps/app_queue.c
+index ac4738f..3eaa023 100644
+--- a/apps/app_queue.c
++++ b/apps/app_queue.c
+@@ -1332,7 +1332,7 @@ static const struct autopause {
+ 	{ QUEUE_AUTOPAUSE_ALL,"all" },
+ };
+ 
+-#define DEFAULT_RETRY		5
++#define DEFAULT_RETRY		1
+ #define DEFAULT_TIMEOUT		15
+ #define RECHECK			1		/*!< Recheck every second to see we we're at the top yet */
+ #define MAX_PERIODIC_ANNOUNCEMENTS 10           /*!< The maximum periodic announcements we can have */

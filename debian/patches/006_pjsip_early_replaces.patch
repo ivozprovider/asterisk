@@ -1,0 +1,51 @@
+diff --git a/res/res_pjsip_refer.c b/res/res_pjsip_refer.c
+index f3af65c..53f9548 100644
+--- a/res/res_pjsip_refer.c
++++ b/res/res_pjsip_refer.c
+@@ -38,6 +38,7 @@
+ #include "asterisk/stasis_bridges.h"
+ #include "asterisk/stasis_channels.h"
+ #include "asterisk/causes.h"
++#include "asterisk/callerid.h"
+ 
+ /*! \brief REFER Progress structure */
+ struct refer_progress {
+@@ -872,12 +873,23 @@ static int refer_incoming_invite_request(struct ast_sip_session *session, struct
+ 	RAII_VAR(struct ast_sip_session *, other_session, NULL, ao2_cleanup);
+ 	struct invite_replaces invite;
+ 
+-	/* If a Replaces header is present make sure it is valid */
+-	if (pjsip_replaces_verify_request(rdata, &other_dlg, PJ_TRUE, &packet) != PJ_SUCCESS) {
+-		response = packet->msg->line.status.code;
+-		ast_assert(response != 0);
+-		pjsip_tx_data_dec_ref(packet);
+-		goto inv_replace_failed;
++	/**
++	 * Override usage pjsip_replaces_verify_request as it does not allow to replace not answered dialogs
++	 * even if early is specified in the Replaces header.
++	 * Beware this change can be dangerous as replaced may change state during this process.
++	 */
++	const pj_str_t STR_REPLACES = { "Replaces", 8 };
++	pjsip_replaces_hdr *rep_hdr;
++
++	/* Get Replaces header for this INVITE request */
++	if ((rep_hdr = (pjsip_replaces_hdr*) pjsip_msg_find_hdr_by_name(rdata->msg_info.msg, &STR_REPLACES, NULL))) {
++		ast_debug(3, "Looking for Call-Id: %*s with to-tag %*s and from-tag %*s\n",
++		    (int) rep_hdr->call_id.slen, rep_hdr->call_id.ptr,
++		    (int) rep_hdr->to_tag.slen, rep_hdr->to_tag.ptr,
++		    (int) rep_hdr->from_tag.slen, rep_hdr->from_tag.ptr);
++
++		/* Try to look for a valid dialog with given callid */
++		other_dlg = pjsip_ua_find_dialog(&rep_hdr->call_id, &rep_hdr->to_tag, &rep_hdr->from_tag, PJ_TRUE);
+ 	}
+ 
+ 	/* If no other dialog exists then this INVITE request does not have a Replaces header */
+@@ -910,6 +922,8 @@ static int refer_incoming_invite_request(struct ast_sip_session *session, struct
+ 
+ 	ast_channel_lock(session->channel);
+ 	ast_setstate(session->channel, AST_STATE_RING);
++	ast_party_id_copy(&session->id, &invite.session->id);
++	ast_party_connected_line_copy(ast_channel_connected(session->channel), ast_channel_connected(invite.session->channel));
+ 	ast_channel_unlock(session->channel);
+ 	ast_raw_answer(session->channel);
+ 

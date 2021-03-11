@@ -1,0 +1,13 @@
+diff --git a/channels/chan_pjsip.c b/channels/chan_pjsip.c
+index e2fd13c..dc4b44b 100644
+--- a/channels/chan_pjsip.c
++++ b/channels/chan_pjsip.c
+@@ -1000,7 +1053,7 @@ static int chan_pjsip_devicestate(const char *data)
+ 	}
+ 
+ 	if (endpoint_snapshot->state == AST_ENDPOINT_OFFLINE) {
+-		state = AST_DEVICE_UNAVAILABLE;
++		state = AST_DEVICE_NOT_INUSE;
+ 	} else if (endpoint_snapshot->state == AST_ENDPOINT_ONLINE) {
+ 		state = AST_DEVICE_NOT_INUSE;
+ 	}

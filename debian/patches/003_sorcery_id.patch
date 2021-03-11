@@ -1,0 +1,11 @@
+--- a/res/res_sorcery_realtime.c
++++ b/res/res_sorcery_realtime.c
+@@ -38,7 +38,7 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision: 425384 $")
+ #include "asterisk/sorcery.h"
+ 
+ /*! \brief They key field used to store the unique identifier for the object */
+-#define UUID_FIELD "id"
++#define UUID_FIELD "sorcery_id"
+ 
+ static void *sorcery_realtime_open(const char *data);
+ static int sorcery_realtime_create(const struct ast_sorcery *sorcery, void *data, void *object);
